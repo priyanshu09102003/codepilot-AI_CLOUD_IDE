@@ -6,6 +6,7 @@ import { dark } from '@clerk/themes'
 import "./globals.css";
 
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ConvexClientProvider } from "@/components/providers/convex-client-provider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,11 +30,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
+    <ClerkProvider 
       appearance={{
-      theme: dark,
-    }}
-    >
+        baseTheme: dark,
+  }}>
       <html lang="en" suppressHydrationWarning>
         <body
           className={`${inter.variable} ${plexMono.variable} antialiased`}
@@ -45,26 +45,28 @@ export default function RootLayout({
             disableTransitionOnChange
           >
 
-            <header>
-                <SignedOut>
-                  <SignInButton />
-                  <SignUpButton>
+            <ConvexClientProvider>
+              <header>
+                  <SignedOut>
+                    <SignInButton />
+                    <SignUpButton>
 
 
-                    <button className="bg-rose-500 text-white p-2 rounded">
-                      Sign Up
-                    </button>
+                      <button className="bg-rose-500 text-white p-2 rounded">
+                        Sign Up
+                      </button>
 
 
-                  </SignUpButton>
-                </SignedOut>
+                    </SignUpButton>
+                  </SignedOut>
 
-                <SignedIn>
-                  <UserButton />
-                </SignedIn>
-            </header>
+                  <SignedIn>
+                    <UserButton />
+                  </SignedIn>
+              </header>
 
-            {children}
+              {children}
+            </ConvexClientProvider>
           </ThemeProvider>
         </body>
       </html>
