@@ -1,15 +1,24 @@
 "use client";
 
-import { ClerkProvider, useAuth } from "@clerk/nextjs";
-import { ConvexReactClient } from "convex/react";
+import { ClerkProvider, SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
+import { Authenticated, AuthLoading, ConvexReactClient, Unauthenticated } from "convex/react";
 import {ConvexProviderWithClerk} from "convex/react-clerk";
 import { ThemeProvider } from "./theme-provider";
+import { dark } from '@clerk/themes'
+import { usePathname } from "next/navigation";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
 export const Providers = ({children}: {children: React.ReactNode}) => {
+    const pathname = usePathname();
+    const isAuthPage = pathname?.startsWith('/sign-in') || pathname?.startsWith('/sign-up');
+
     return(
-        <ClerkProvider>
+        <ClerkProvider
+            appearance={{
+                baseTheme: dark,
+            }}
+        >
             <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
 
             <ThemeProvider
@@ -18,8 +27,24 @@ export const Providers = ({children}: {children: React.ReactNode}) => {
                 enableSystem
                 disableTransitionOnChange
             >
-            
-                {children}
+                {isAuthPage ? (
+                    children
+                ) : (
+                    <>
+                        <Authenticated>
+                            {children}
+                        </Authenticated>
+
+                        <Unauthenticated>
+                            <SignInButton/>
+                            <SignUpButton />
+                        </Unauthenticated>
+
+                        <AuthLoading>
+                            Auth Loading...
+                        </AuthLoading>
+                    </>
+                )}
 
             </ThemeProvider>
 

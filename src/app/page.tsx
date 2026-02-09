@@ -6,15 +6,12 @@ import { api } from "../../convex/_generated/api";
 
 export default function Home() {
 
-  const tasks = useQuery(api.tasks.get);
+  const tasks = useQuery(api.projects.get);
 
   return (
     <div>
-      {tasks?.map((task) => (
-        <div key={task._id}>
-
-          <p>(task.text)</p>
-          <p>Is completed: {task.isCompleted}</p>
+      {tasks?.map((project) => (
+        <div key={project._id}>
 
         </div>
       ))}
