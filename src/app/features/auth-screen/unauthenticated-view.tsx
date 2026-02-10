@@ -64,7 +64,7 @@ export const UnauthenticatedView = () => {
 
                 {/* Feature Cards */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-                    <div className="bg-card/30 backdrop-blur-sm border border-border rounded-lg p-6 hover:border-primary/50 transition-colors">
+                    <div className="bg-card/30 backdrop-blur-sm border border-border rounded-lg p-6 hover:border-primary/50 transition-colors cursor-pointer">
                         <div className="flex items-start gap-4">
                             <div className="p-2 bg-primary/10 rounded-lg">
                                 <LockKeyholeIcon className="w-5 h-5 text-primary" />
@@ -78,7 +78,7 @@ export const UnauthenticatedView = () => {
                         </div>
                     </div>
 
-                    <div className="bg-card/30 backdrop-blur-sm border border-border rounded-lg p-6 hover:border-primary/50 transition-colors">
+                    <div className="bg-card/30 backdrop-blur-sm border border-border rounded-lg p-6 hover:border-primary/50 transition-colors cursor-pointer">
                         <div className="flex items-start gap-4">
                             <div className="p-2 bg-chart-2/10 rounded-lg">
                                 <Code2Icon className="w-5 h-5 text-chart-2" />
@@ -92,7 +92,7 @@ export const UnauthenticatedView = () => {
                         </div>
                     </div>
 
-                    <div className="bg-card/30 backdrop-blur-sm border border-border rounded-lg p-6 hover:border-primary/50 transition-colors">
+                    <div className="bg-card/30 backdrop-blur-sm border border-border rounded-lg p-6 hover:border-primary/50 transition-colors cursor-pointer">
                         <div className="flex items-start gap-4">
                             <div className="p-2 bg-chart-3/10 rounded-lg">
                                 <SparklesIcon className="w-5 h-5 text-chart-3" />
@@ -106,7 +106,7 @@ export const UnauthenticatedView = () => {
                         </div>
                     </div>
 
-                    <div className="bg-card/30 backdrop-blur-sm border border-border rounded-lg p-6 hover:border-primary/50 transition-colors">
+                    <div className="bg-card/30 backdrop-blur-sm border border-border rounded-lg p-6 hover:border-primary/50 transition-colors cursor-pointer">
                         <div className="flex items-start gap-4">
                             <div className="p-2 bg-chart-4/10 rounded-lg">
                                 <GithubIcon className="w-5 h-5 text-chart-4" />
