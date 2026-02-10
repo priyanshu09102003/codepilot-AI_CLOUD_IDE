@@ -1,16 +1,16 @@
 //localhost:3000/api/demo/blocking
 
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createGroq } from '@ai-sdk/groq';
 import { generateText } from 'ai';
 
-const google = createGoogleGenerativeAI({
-    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY
+const groq = createGroq({
+    apiKey: process.env.GROQ_API_KEY
 })
 
 
 export async function POST(){
     const response = await generateText({
-    model: google('gemini-2.5-flash'),
+    model: groq("llama-3.3-70b-versatile"),
     prompt: 'Write a vegetarian lasagna recipe for 4 people.',
     });
 

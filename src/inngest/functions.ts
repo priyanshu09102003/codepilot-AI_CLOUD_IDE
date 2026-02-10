@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 import { inngest } from "./client";
-import { google } from "@ai-sdk/google";
+import { groq } from "@ai-sdk/groq";
 
 export const demoGenerate = inngest.createFunction(
   { id: "demo-generate" },
@@ -8,9 +8,9 @@ export const demoGenerate = inngest.createFunction(
   async ({ step }) => {
     await step.run("generate-text" , async()=> {
         return await generateText({
-            model: google("gemini-2.5-flash"),
-            prompt: "Write a vegertarian lasagna recipe for 4 people"
-        })
+            model: groq("llama-3.3-70b-versatile"),
+            prompt: 'Write a vegetarian lasagna recipe for 4 people.',
+        });
     })
   },
 );
