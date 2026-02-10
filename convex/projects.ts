@@ -13,11 +13,13 @@ export const create = mutation({
             throw new Error("Unauthorized")
         }
 
-
-        await ctx.db.insert("projects", {
+        const projectId = await ctx.db.insert("projects", {
             name: args.name,
-            ownerId: identity?.subject
+            ownerId: identity.subject,
+            updatedAt: Date.now()
         })
+
+        return projectId;
     }
 })
 
