@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AlertCircleIcon, ArrowRightIcon, GlobeIcon, Loader2Icon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { FaGithub } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
 
 
 
@@ -37,6 +38,53 @@ const getProjectIcon = (project: Doc<"projects">)=>{
 interface ProjectsListProps{
     onViewAll: () =>void;
 }
+
+
+const ContinueCard = ({data}: {
+    data: Doc<"projects">
+}) => {
+    return(
+
+        <div className="flex flex-col gap-2">
+            <span className="text-xs text-muted-foreground">
+                Last updated
+            </span>
+
+            <Button
+            variant={"outline"}
+            asChild
+            className="h-auto items-start justify-start p-4 bg-background border rounded-none flex flex-col gap-2"
+            >
+
+                <Link href={`/projects/${data._id}`} className="group">
+
+                    <div className="flex items-center justify-between w-full">
+
+                        <div className="flex items-center gap-2">
+                            {getProjectIcon(data)}
+                            <span className="font-medium truncate">
+                                {data.name}
+                            </span>
+                        </div>
+
+                        <ArrowRightIcon className="size-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+
+                    </div>
+
+                    <span className="text-xs text-muted-foreground">
+                        {formatTimeStamp(data.updatedAt)}
+                    </span>
+                </Link>
+
+            </Button>
+
+        </div>
+
+    )
+}
+
+
+
 
 const ProjectItem = ({data}: {
     data: Doc<"projects">
@@ -71,9 +119,12 @@ export const ProjectsList = ({
         return <Spinner className="size-5 text-ring"/>
     }
 
+    const [mostRecent, ...rest] = projects
+
      return (
         <div className="flex flex-col gap-4">
-            {projects.length > 0 && (
+            {mostRecent ? <ContinueCard data={mostRecent} /> : null}
+            {rest.length > 0 && (
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between gap-2">
                         <span className="text-xs text-muted-foreground">
@@ -90,7 +141,7 @@ export const ProjectsList = ({
                         </button>
                     </div>
                     <ul className="flex flex-col">
-                        {projects.map((project) => (
+                        {rest.map((project) => (
                             <ProjectItem 
                                 key={project._id}
                                 data={project}
