@@ -153,7 +153,7 @@ export const Navbar = ({
                     </Tooltip>
                 ): (
 
-                    project?.updatedAt && (
+                    (
 
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -162,11 +162,12 @@ export const Navbar = ({
 
                             </TooltipTrigger>
                             <TooltipContent>Saved{" "}
-                                {
+                                { project?.updatedAt ?
                                     formatDistanceToNow(
                                         project.updatedAt,
                                         {addSuffix: true}
-                                    )
+                                    ) 
+                                    : "Loading..."
                                 }
                             </TooltipContent>
                         </Tooltip>
