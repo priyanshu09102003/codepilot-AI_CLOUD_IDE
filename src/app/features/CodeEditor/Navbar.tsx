@@ -8,7 +8,8 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Poppins } from "next/font/google";
 import { UserButton } from "@clerk/nextjs";
-import { useSingleProject } from "@/hooks/use-projects";
+import { useRenameProject, useSingleProject } from "@/hooks/use-projects";
+import React, { useState } from "react";
 
 const font = Poppins({
     subsets: ["latin"],
@@ -22,7 +23,40 @@ export const Navbar = ({
 }) => {
 
 
-    const project = useSingleProject(projectId)
+    const project = useSingleProject(projectId);
+
+    const renameProject = useRenameProject(projectId);
+
+    const [isRenaming , setIsRenaming] = useState(false);
+    const [name, setName] = useState("");
+
+    const handleStartRename = () => {
+        if(!project) return;
+
+        setName(project.name);
+        setIsRenaming(true)
+    }
+
+    const handleSubmit = () => {
+        if(!project) return;
+        setIsRenaming(false);
+
+        const trimmedName = name.trim();
+        if(!trimmedName || trimmedName === project.name)return;
+
+        renameProject({id: projectId, name: trimmedName})
+    }
+
+    const handleKeyDown = (e:React.KeyboardEvent) => {
+        if(e.key === "Enter"){
+            handleSubmit();
+        }
+        else if(e.key === "Escape"){
+            setIsRenaming(false);
+        }
+    }
+
+
 
     return(
         <nav className="flex justify-between items-center gap-x-2 p-2 p-2 bg-sidebar border-b">
@@ -68,11 +102,35 @@ export const Navbar = ({
                         <BreadcrumbSeparator className="ml-0! mr-1" /> 
                         <BreadcrumbItem>
 
-                                <BreadcrumbPage className="cursor-pointer hover:text-primary font-medium max-w-40 truncate">
+                                {
+                                    isRenaming? (
+                                        <input 
 
-                                        {project?.name ?? "Loading..."}
+                                            autoFocus
+                                            type="text"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+
+                                            onFocus={(e) => e.currentTarget.select()}
+                                            onBlur={handleSubmit}
+                                            onKeyDown={handleKeyDown}
+                                            className="text-sm bg-transparent text-foreground outline-none focus:ring-1 focus:ring-inset focus:ring-ring font-medium max-w-40 truncate"
+                                        
+                                        />
+
+                                    ) :(
+
+                                        <BreadcrumbPage className="cursor-pointer hover:text-primary font-medium max-w-40 truncate" onClick={handleStartRename}>
+
+                                            {project?.name ?? "Loading..."}
                                 
-                                </BreadcrumbPage>
+                                        </BreadcrumbPage>
+
+
+                                    )
+                                }
+
+                                
                         
                         </BreadcrumbItem>
 
