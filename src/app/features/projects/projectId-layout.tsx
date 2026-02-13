@@ -1,17 +1,20 @@
 "use client";
 
+import { Id } from "../../../../convex/_generated/dataModel";
+import { Navbar } from "../CodeEditor/Navbar";
+
 export const ProjectIdLayout = ({
     children,
     projectId
 }: {
     children: React.ReactNode;
-    projectId: string;
+    projectId: Id<"projects">;
 
 }) => {
 
     return(
         <div className="w-full h-screen flex flex-col">
-            <Navabar projectId = {projectId} />
+            <Navbar projectId = {projectId} />
             {children}
         </div>
     )
