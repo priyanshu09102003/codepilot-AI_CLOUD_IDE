@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { useCreateFile, useCreateFolder, useFolderContents } from "@/hooks/use-files"
 import { CreateInput } from "./create-input"
 import { LoadingRow } from "./loading-row"
+import { Tree } from "./tree"
 
 export const FileExplorer = ({
     projectId

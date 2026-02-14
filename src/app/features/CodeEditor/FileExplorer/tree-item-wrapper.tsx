@@ -87,13 +87,13 @@ export const TreeItemWrapper = ({
                 )}
 
                 <ContextMenuItem onClick={onRename} className="text-sm">
-                    Rename...
+                    Rename
                     <ContextMenuShortcut>Enter</ContextMenuShortcut>
                 </ContextMenuItem>
 
                 <ContextMenuItem onClick={onDelete} className="text-sm">
-                    Ctrl+Backspace
-                    <ContextMenuShortcut>Enter</ContextMenuShortcut>
+                    Delete
+                    <ContextMenuShortcut>Ctrl+Backspace</ContextMenuShortcut>
                 </ContextMenuItem>
 
             </ContextMenuContent>
