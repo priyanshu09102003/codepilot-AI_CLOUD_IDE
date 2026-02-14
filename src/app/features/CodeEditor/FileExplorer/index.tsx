@@ -5,8 +5,9 @@ import { useState } from "react"
 import { Id } from "../../../../../convex/_generated/dataModel"
 import { useSingleProject } from "@/hooks/use-projects"
 import { Button } from "@/components/ui/button"
-import { useCreateFile, useCreateFolder } from "@/hooks/use-files"
+import { useCreateFile, useCreateFolder, useFolderContents } from "@/hooks/use-files"
 import { CreateInput } from "./create-input"
+import { LoadingRow } from "./loading-row"
 
 export const FileExplorer = ({
     projectId
@@ -16,6 +17,11 @@ export const FileExplorer = ({
     const [isOpen, setIsOpen] = useState(false);
     const [collapseKey, setCollapseKey] = useState(0);
     const [creating, setCreating] = useState<"file" | "folder"| null>(null);
+
+    const rootFiles = useFolderContents({
+        projectId,
+        enabled: isOpen
+    })
 
     const createFile = useCreateFile();
     const createFolder=useCreateFolder();
@@ -39,8 +45,8 @@ export const FileExplorer = ({
             });
         }
     }
-
     const project = useSingleProject(projectId)
+
     return(
         <div className="h-full bg-sidebar">
 
@@ -124,6 +130,8 @@ export const FileExplorer = ({
                 {isOpen && (
                     <>
 
+                        {rootFiles === undefined && <LoadingRow level={0} />}
+
                         {
                             creating && (
                                 <CreateInput
@@ -134,6 +142,15 @@ export const FileExplorer = ({
                                 />
                             )
                         }
+
+                        {rootFiles?.map((item) => (
+                            <Tree 
+                            key= {`${item._id}-${collapseKey}`}
+                            item = {item}
+                            level = {0}
+                            projectId = {projectId}
+                            />
+                        ))}
                     
                     </>
                 )}
