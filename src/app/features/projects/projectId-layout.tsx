@@ -7,7 +7,7 @@ import "allotment/dist/style.css";
 
 const MIN_SIDEBAR_WIDTH = 200;
 const MAX_SIDEBAR_WIDTH = 800;
-const DEFAULT_CONVERSTIONAL_SIDEBAR_WIDTH = 400;
+const DEFAULT_CONVERSTIONAL_SIDEBAR_WIDTH = 300;
 const DEFAULT_MAIN_SIZE = 1000
 
 export const ProjectIdLayout = ({
