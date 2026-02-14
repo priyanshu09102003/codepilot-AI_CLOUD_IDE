@@ -5,6 +5,8 @@ import { useState } from "react"
 import { Id } from "../../../../../convex/_generated/dataModel"
 import { useSingleProject } from "@/hooks/use-projects"
 import { Button } from "@/components/ui/button"
+import { useCreateFile, useCreateFolder } from "@/hooks/use-files"
+import { CreateInput } from "./create-input"
 
 export const FileExplorer = ({
     projectId
@@ -14,6 +16,29 @@ export const FileExplorer = ({
     const [isOpen, setIsOpen] = useState(false);
     const [collapseKey, setCollapseKey] = useState(0);
     const [creating, setCreating] = useState<"file" | "folder"| null>(null);
+
+    const createFile = useCreateFile();
+    const createFolder=useCreateFolder();
+
+    const handleCreate = (name:string) => {
+        setCreating(null);
+
+        if(creating === "file"){
+            createFile({
+                projectId,
+                name,
+                content: "",
+                parentId: undefined
+            })
+        }
+        else{
+            createFolder({
+                projectId,
+                name,
+                parentId: undefined
+            });
+        }
+    }
 
     const project = useSingleProject(projectId)
     return(
@@ -48,6 +73,7 @@ export const FileExplorer = ({
                             setIsOpen(true)
 
                             //Set creating file to true
+                            setCreating("file")
                         }}
                         variant="highlight"
                         size="icon-xs"
@@ -64,6 +90,7 @@ export const FileExplorer = ({
                             setIsOpen(true)
 
                             //Set creating folder to true
+                            setCreating("folder")
                         }}
                         variant="highlight"
                         size="icon-xs"
@@ -80,7 +107,7 @@ export const FileExplorer = ({
                             setIsOpen(true)
 
                             //Reset collapse
-                            setCollapseKey((prev) => prev + 1)
+                            setCollapseKey((prev) => prev + 1);
                         }}
                         variant="highlight"
                         size="icon-xs"
@@ -93,6 +120,23 @@ export const FileExplorer = ({
                     </div>
 
                 </div>
+
+                {isOpen && (
+                    <>
+
+                        {
+                            creating && (
+                                <CreateInput
+                                 type={creating}
+                                 level={0}
+                                 onSubmit = {handleCreate}
+                                 onCancel={() => setCreating(null)}
+                                />
+                            )
+                        }
+                    
+                    </>
+                )}
             </ScrollArea>
 
         </div>
