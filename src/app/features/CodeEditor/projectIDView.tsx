@@ -94,7 +94,7 @@ export const ProjectIDView = (
                             maxSize={MAX_SIDEBAR_WIDTH}
                             preferredSize={DEFAULT_SIDEBAR_WIDTH}
                             >
-                                <FileExplorer />
+                                <FileExplorer projectId={projectId} />
                             </Allotment.Pane>
 
                             <Allotment.Pane>

@@ -1,10 +1,21 @@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import { ChevronRightIcon } from "lucide-react"
+import { ChevronRightIcon, CopyMinusIcon, FilePlusCornerIcon, FolderPlusIcon } from "lucide-react"
 import { useState } from "react"
+import { Id } from "../../../../../convex/_generated/dataModel"
+import { useSingleProject } from "@/hooks/use-projects"
+import { Button } from "@/components/ui/button"
 
-export const FileExplorer = () => {
+export const FileExplorer = ({
+    projectId
+}:{
+    projectId: Id<"projects">
+}) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [collapseKey, setCollapseKey] = useState(0);
+    const [creating, setCreating] = useState<"file" | "folder"| null>(null);
+
+    const project = useSingleProject(projectId)
     return(
         <div className="h-full bg-sidebar">
 
@@ -23,6 +34,63 @@ export const FileExplorer = () => {
                         )
                     }
                     />
+
+                    <p className="text-xs uppercase line-clamp-1">
+                        {project?.name ?? "Loading..."}
+                    </p>
+
+                    <div className="opacity-0 group-hover/project:opacity-100 transition-none duration-0 flex items-center gap-0.5 ml-auto">
+
+                        <Button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setIsOpen(true)
+
+                            //Set creating file to true
+                        }}
+                        variant="highlight"
+                        size="icon-xs"
+                        >
+
+                            <FilePlusCornerIcon className="size-3.5" />
+
+                        </Button>
+
+                        <Button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setIsOpen(true)
+
+                            //Set creating folder to true
+                        }}
+                        variant="highlight"
+                        size="icon-xs"
+                        >
+
+                            <FolderPlusIcon className="size-3.5" />
+
+                        </Button>
+
+                        <Button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setIsOpen(true)
+
+                            //Reset collapse
+                            setCollapseKey((prev) => prev + 1)
+                        }}
+                        variant="highlight"
+                        size="icon-xs"
+                        >
+
+                            <CopyMinusIcon className="size-3.5" />
+
+                        </Button>
+
+                    </div>
 
                 </div>
             </ScrollArea>
