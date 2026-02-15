@@ -47,7 +47,7 @@ const ContinueCard = ({data}: {
 
         <div className="flex flex-col gap-2">
             <span className="text-xs text-muted-foreground">
-                Most Recent 
+                Your newly created Project
             </span>
 
             <Button
@@ -128,7 +128,7 @@ export const ProjectsList = ({
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between gap-2">
                         <span className="text-xs text-muted-foreground">
-                            Previous Projects
+                            Your Previous Projects
                         </span>
                         <button 
                             className="flex items-center gap-2 text-muted-foreground text-xs hover:text-foreground transition-colors"
