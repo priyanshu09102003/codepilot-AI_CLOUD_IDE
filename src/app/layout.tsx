@@ -17,8 +17,8 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CodePilot | An AI Cloud-IDE",
-  description: "Code with Ease",
+  title: "CodePilot",
+  description: "Your cloud-based AI coding assistant",
 };
 
 export default function RootLayout({
