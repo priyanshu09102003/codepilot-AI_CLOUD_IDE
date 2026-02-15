@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useRef } from "react"
-import {basicSetup} from "codemirror"
 import {oneDark} from "@codemirror/theme-one-dark"
 import { customTheme } from "./extensions/theme"
 import { getLanguageExtension } from "./extensions/language-extension"
 import {indentWithTab} from "@codemirror/commands"
 import {EditorView, keymap } from "@codemirror/view"
 import { minimap } from "./extensions/minimap"
+import {indentationMarkers} from "@replit/codemirror-indentation-markers"
+import { customSetup } from "./extensions/custom-setup"
 
 interface Props{
     fileName: string;
+    onChange: (value: string) => void;
+    initialValue?: string
 }
 
-export const CodeEditor = ({fileName}:Props) => {
+export const CodeEditor = ({fileName , initialValue = "", onChange}:Props) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
 
@@ -24,27 +27,21 @@ export const CodeEditor = ({fileName}:Props) => {
         if(!editorRef.current) return;
 
         const view = new EditorView({
-            doc: `const Counter = () => {
-            const [value, setValue] = useState(0);
-            const onIncrease = setValue((value) => value+1);
-            const onDecrease = setValue((value) => value-1);
-
-            return(
-                <div>
-                    <button onClick={onIncrease}>{value}</button>
-                    <button onClick={onDecrease}>{value}</button>
-                </div>
-            )
-            
-            }`,
+            doc: initialValue,
             parent: editorRef.current,
             extensions: [
                 oneDark,
                 customTheme,
-                basicSetup,
+                customSetup,
                 languageExtension,
                 keymap.of([indentWithTab]),
-                minimap()
+                minimap(),
+                indentationMarkers(),
+                EditorView.updateListener.of((update) => {
+                    if(update.docChanged){
+                        onChange(update.state.doc.toString())
+                    }
+                })
             ]
         });
 
@@ -52,9 +49,9 @@ export const CodeEditor = ({fileName}:Props) => {
 
         return () => {
             view.destroy();
-        }
+        };
 
-    }, [])
+    }, [languageExtension])
 
     return(
         <div ref={editorRef} className="size-full pl-4 bg-background" />

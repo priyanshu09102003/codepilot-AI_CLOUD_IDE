@@ -10,16 +10,24 @@ export const useCreateFolder = () => {
     return useMutation(api.files.createFolder)
 }
 
+export const useUpdateFile = () => {
+    return useMutation(api.files.updateFile)
+    //Optimistic Mutation
+}
+
 export const useRenameFile = () => {
     return useMutation(api.files.renameFile)
+    //Optimistic Mutation
 }
 
 export const useDeleteFile = () => {
     return useMutation(api.files.deleteFile)
+    //Optimistic Mutation
 }
 
 export const useFile = (fileId: Id<"files">|null) => {
     return useQuery(api.files.getSingleFile, fileId?{id: fileId} : "skip")
+    //Optimistic Mutation
 }
 
 export const useFilePath = (fileId: Id<"files">|null) => {
