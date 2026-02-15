@@ -94,7 +94,32 @@ const renderPlugin = ViewPlugin.fromClass(
     }
 )
 
+const acceptSuggestionsKeymap = keymap.of([
+    {
+        key: "Tab",
+        run: (view) => {
+            const suggestion = view.state.field(suggestionState);
+
+            if(!suggestion){
+                return false
+            }
+
+            const cursor = view.state.selection.main.head;
+
+            view.dispatch({
+                changes: {from: cursor, insert: suggestion}, //Insert the suggestion text
+                selection: {anchor: cursor + suggestion.length}, //Move the cursor upto the end of the suggestion
+
+                effects: setSuggestionEffect.of(null),
+            })
+
+            return true;
+        }
+    }
+])
+
 export const suggestion = (fileName: string) => [
     suggestionState, //state storage
     renderPlugin, //render the ghost suggestions
+    acceptSuggestionsKeymap, //TAB key to accept it
 ]
