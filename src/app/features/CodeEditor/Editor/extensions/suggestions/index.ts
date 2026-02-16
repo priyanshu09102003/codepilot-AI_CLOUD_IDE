@@ -9,6 +9,7 @@ import {
   keymap,
 } from "@codemirror/view";
 
+import { fetcher } from "./fetcher";
 
 
 const setSuggestionEffect = StateEffect.define<string | null>();
@@ -54,16 +55,46 @@ let debounceTimer: number | null = null;
 let isWaitingForSuggestion = false;
 const DEBOUNCE_DELAY = 300;
 
-const generateFakeSugegstion = (textBeforeCursor: string): string | null => {
-    const trimmed = textBeforeCursor.trimEnd();
+let currentAbortController: AbortController | null = null
 
-    if(trimmed.endsWith("const")) return " myVariable =";
-    if(trimmed.endsWith("function")) return " myFunction()";
-    if(trimmed.endsWith("console.")) return "log()";
-    if(trimmed.endsWith("return")) return " null";
 
-    return null;
-};
+//Generate an AI suggestion
+const generatePayload = (view: EditorView, fileName: string) => {
+    const code = view.state.doc.toString();
+
+    if(!code || code.trim().length === 0) return null;
+
+    const cursorPosition = view.state.selection.main.head;
+    const currentLine = view.state.doc.lineAt(cursorPosition);
+    const cursorInLine = cursorPosition - currentLine.from;
+
+
+    const previousLines: string[] = [];
+    const previousLinestoFetch = Math.min(5, currentLine.number - 1);
+
+    for(let i = previousLinestoFetch; i>=1; i--){
+        previousLines.push(view.state.doc.line(currentLine.number - i).text)
+    }
+
+    const nextLines: string[] = []; 
+    const totalLines = view.state.doc.lines;
+    const linesToFetch = Math.min(5, totalLines - currentLine.number);
+
+    for(let i = 1; i<=linesToFetch; i++){
+        nextLines.push(view.state.doc.line(currentLine.number + i).text)
+    }
+
+    return {
+        fileName,
+        code,
+        currentLine: currentLine.text,
+        previousLines: previousLines.join("\n"),
+        textBeforeCursor: currentLine.text.slice(0, cursorInLine),
+        textAfterCursor: currentLine.text.slice(cursorInLine),
+        nextLines: nextLines.join("\n"),
+        lineNumber: currentLine.number,
+    }
+}
 
 const createDebouncePlugin = (fileName: string) => {
     return ViewPlugin.fromClass(
@@ -83,15 +114,28 @@ const createDebouncePlugin = (fileName: string) => {
                     clearTimeout(debounceTimer);
                 }
 
+                if(currentAbortController != null){
+                    currentAbortController.abort()
+                }
+
+
+
                 isWaitingForSuggestion = true;
 
                 debounceTimer = window.setTimeout(async() => {
-                    //Fake suggestion(to be deleted in later stages)
-                    const cursor = view.state.selection.main.head;
-                    const line = view.state.doc.lineAt(cursor);
 
-                    const textBeforeCursor = line.text.slice(0, cursor - line.from);
-                    const suggestion = generateFakeSugegstion(textBeforeCursor);
+                    const payload = generatePayload(view, fileName);
+                    if(!payload){
+                        isWaitingForSuggestion = false;
+                        view.dispatch({effects: setSuggestionEffect.of(null)});
+                        return;
+                    }
+
+                    currentAbortController = new AbortController();
+                    const suggestion = await fetcher(
+                        payload, 
+                        currentAbortController.signal
+                    )
 
                     isWaitingForSuggestion= false;
 
@@ -105,13 +149,14 @@ const createDebouncePlugin = (fileName: string) => {
                 if(debounceTimer !== null){
                     clearTimeout(debounceTimer)
                 }
+
+                if(currentAbortController !== null){
+                    currentAbortController.abort();
+                }
             }
         }
     )
 }
-
-
-
 
 
 
