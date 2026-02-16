@@ -57,10 +57,10 @@ const DEBOUNCE_DELAY = 300;
 const generateFakeSugegstion = (textBeforeCursor: string): string | null => {
     const trimmed = textBeforeCursor.trimEnd();
 
-    if(trimmed.endsWith("const")) return "myVariable =";
-    if(trimmed.endsWith("function")) return "myFunction()";
+    if(trimmed.endsWith("const")) return " myVariable =";
+    if(trimmed.endsWith("function")) return " myFunction()";
     if(trimmed.endsWith("console.")) return "log()";
-    if(trimmed.endsWith("return")) return "null";
+    if(trimmed.endsWith("return")) return " null";
 
     return null;
 };
