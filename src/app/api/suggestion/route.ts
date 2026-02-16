@@ -1,16 +1,6 @@
-import { generateText, Output } from "ai";
+import { generateText } from "ai";
 import { NextResponse } from "next/server";
-import {z} from "zod";
 import { groq } from "@ai-sdk/groq";
-
-
-const suggestionSchema = z.object({
-    suggestion: z
-        .string()
-        .describe(
-            "The code to insert at cursor, or empty string if no completion needed"
-        )
-});
 
 const SUGGESTION_PROMPT = `You are a code suggestion assistant.
 
@@ -40,6 +30,8 @@ Follow these steps IN ORDER:
 3. Only if steps 1 and 2 don't apply: suggest what should be typed at the cursor position, using context from full_code.
 
 Your suggestion is inserted immediately after the cursor, so never suggest code that's already in the file.
+
+Return ONLY the suggestion text, nothing else. No explanations, no markdown, no code blocks.
 </instructions>`;
 
 export async function POST(request: Request){
@@ -72,13 +64,13 @@ export async function POST(request: Request){
         .replace("{nextLines}", nextLines || "")
         .replace("{lineNumber}", lineNumber.toString());
 
-        const {output} = await generateText({
+        const {text} = await generateText({
             model: groq("llama-3.3-70b-versatile"),
-            output: Output.object({schema: suggestionSchema}),
-            prompt
+            prompt,
+            temperature: 0.2,
         })
 
-        return NextResponse.json({suggestion: output.suggestion})
+        return NextResponse.json({suggestion: text.trim()})
         
     } catch (error) {
 
