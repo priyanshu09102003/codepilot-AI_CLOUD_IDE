@@ -1,15 +1,7 @@
-import { generateText, Output } from "ai";
+import { generateText } from "ai";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { groq } from "@ai-sdk/groq";
-
-const suggestionSchema = z.object({
-    suggestion: z
-        .string()
-        .describe(
-            "The code to insert at cursor, or empty string if no completion needed"
-        )
-});
+import { auth } from "@clerk/nextjs/server";
 
 const SUGGESTION_PROMPT = `You are a code suggestion assistant.
 
@@ -36,17 +28,27 @@ Follow these steps IN ORDER:
 
 2. Check if before_cursor ends with a complete statement (;, }, )). If yes, return empty string.
 
-3. Check if the cursor is in the middle of an existing expression, or if completing would duplicate existing code. If yes, return empty string.
-
-4. Only if steps 1, 2 and 3 don't apply: suggest what should be typed at the cursor position, using context from full_code.
+3. Only if steps 1 and 2 don't apply: suggest what should be typed at the cursor position, using context from full_code.
 
 Your suggestion is inserted immediately after the cursor, so never suggest code that's already in the file.
-Return ONLY the raw code to insert. No markdown fences, no explanations, no language tags. Your output will be inserted directly into a code editor.
+
+Return ONLY the suggestion text, nothing else. No explanations, no markdown, no code blocks.
 </instructions>`;
 
-export async function POST(request: Request) {
+
+export async function POST(request: Request){
     try {
-        const {
+
+        const {userId} = await auth();
+
+        if(!userId){
+            return NextResponse.json(
+                {error: "Unauthorized"},
+                {status: 403}
+            )
+        }
+
+        const{
             fileName,
             code,
             currentLine,
@@ -57,36 +59,37 @@ export async function POST(request: Request) {
             lineNumber,
         } = await request.json();
 
-        if (!code) {
+        if(!code){
             return NextResponse.json(
-                { error: "Code is required" },
-                { status: 400 }
-            );
+            {error: "Code is required"}, 
+            {status: 400})
         }
 
         const prompt = SUGGESTION_PROMPT
-            .replace("{fileName}", fileName)
-            .replace("{code}", code)
-            .replace("{currentLine}", currentLine)
-            .replace("{previousLines}", previousLines || "")
-            .replace("{textBeforeCursor}", textBeforeCursor)
-            .replace("{textAfterCursor}", textAfterCursor)
-            .replace("{nextLines}", nextLines || "")
-            .replace("{lineNumber}", lineNumber.toString());
+        .replace("{fileName}", fileName)
+        .replace("{code}", code)
+        .replace("{currentLine}", currentLine)
+        .replace("{previousLines}", previousLines || "")
+        .replace("{textBeforeCursor}", textBeforeCursor)
+        .replace("{textAfterCursor}", textAfterCursor)
+        .replace("{nextLines}", nextLines || "")
+        .replace("{lineNumber}", lineNumber.toString());
 
-        const { output } = await generateText({
-            model: groq("meta-llama/llama-4-scout-17b-16e-instruct"),
-            output: Output.object({ schema: suggestionSchema }),
+        const {text} = await generateText({
+            model: groq("llama-3.3-70b-versatile"),
             prompt,
-        });
+            temperature: 0.2,
+        })
 
-        return NextResponse.json({ suggestion: output.suggestion });
-
+        return NextResponse.json({suggestion: text.trim()})
+        
     } catch (error) {
+
         console.error("Suggestion Error: ", error);
         return NextResponse.json(
-            { error: "Failed to generate suggestion" },
-            { status: 500 }
-        );
+            {error: "Failed to generate suggestion"},
+            {status: 500}
+        )
+        
     }
 }

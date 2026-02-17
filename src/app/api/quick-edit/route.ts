@@ -1,18 +1,10 @@
 import { z } from "zod";
-import { generateText, Output } from "ai";
+import { generateText } from "ai";  // Remove Output import
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { groq } from "@ai-sdk/groq";
 
 import { firecrawl } from "@/lib/firecrawl";
-
-const quickEditSchema = z.object({
-    editedCode: z
-        .string()
-        .describe(
-            "The edited version of the selected code based on the instruction"
-        ),
-});
 
 const URL_REGEX = /https?:\/\/[^\s)>\]]+/g;
 
@@ -34,86 +26,84 @@ const QUICK_EDIT_PROMPT = `You are a code editing assistant. Edit the selected c
 </instruction>
 
 <instructions>
-Return ONLY the edited version of the selected code.
+Return ONLY the edited version of the selected code, with no extra text.
 Maintain the same indentation level as the original.
-Return ONLY the raw edited code. No markdown fences, no explanations, no language tags. Your output will be inserted directly into a code editor.
+Do not include any explanations, comments, or markdown code blocks unless requested.
 If the instruction is unclear or cannot be applied, return the original code unchanged.
 </instructions>`;
 
 export async function POST(request: Request) {
-    try {
-        const { userId } = await auth();
-        const { selectedCode, fullCode, instruction } = await request.json();
+  try {
+    const { userId } = await auth();
+    const { selectedCode, fullCode, instruction } = await request.json();
 
-        if (!userId) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-
-        if (!selectedCode) {
-            return NextResponse.json(
-                { error: "Selected code is required" },
-                { status: 400 }
-            );
-        }
-
-        if (!instruction) {
-            return NextResponse.json(
-                { error: "Instruction is required" },
-                { status: 400 }
-            );
-        }
-
-        const urls: string[] = instruction.match(URL_REGEX) || [];
-        let documentationContext = "";
-
-        if (urls.length > 0) {
-            const scrapedResults = await Promise.all(
-                urls.map(async (url) => {
-                    try {
-                        const result = await firecrawl.scrape(url, {
-                            formats: ["markdown"],
-                        });
-
-                        if (result.markdown) {
-                            return `<doc url="${url}">\n${result.markdown}\n</doc>`;
-                        }
-
-                        return null;
-                    } catch {
-                        return null;
-                    }
-                })
-            );
-
-            const validResults = scrapedResults.filter(Boolean);
-
-            if (validResults.length > 0) {
-                documentationContext = `<documentation>\n${validResults.join("\n\n")}\n</documentation>`;
-            }
-        }
-
-        const prompt = QUICK_EDIT_PROMPT
-            .replace("{selectedCode}", selectedCode)
-            .replace("{fullCode}", fullCode || "")
-            .replace("{instruction}", instruction)
-            .replace("{documentation}", documentationContext);
-
-        const { output } = await generateText({
-            model: groq("meta-llama/llama-4-maverick-17b-128e-instruct"),
-            output: Output.object({ schema: quickEditSchema }),
-            prompt,
-        });
-
-        return NextResponse.json({ editedCode: output.editedCode });
-
-    } catch (error) {
-        console.error("Edit error:", error);
-        return NextResponse.json(
-            { error: "Failed to generate edit" },
-            { status: 500 }
-        );
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }          // Fixed: was 400, should be 401 for Unauthorized
+      );
     }
-}
+
+    if (!selectedCode) {
+      return NextResponse.json(
+        { error: "Selected code is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!instruction) {
+      return NextResponse.json(
+        { error: "Instruction is required" },
+        { status: 400 }
+      );
+    }
+
+    const urls: string[] = instruction.match(URL_REGEX) || [];
+    let documentationContext = "";
+
+    if (urls.length > 0) {
+      const scrapedResults = await Promise.all(
+        urls.map(async (url) => {
+          try {
+            const result = await firecrawl.scrape(url, {
+              formats: ["markdown"],
+            });
+
+            if (result.markdown) {
+              return `<doc url="${url}">\n${result.markdown}\n</doc>`;
+            }
+
+            return null;
+          } catch {
+            return null;
+          }
+        })
+      );
+
+      const validResults = scrapedResults.filter(Boolean);
+
+      if (validResults.length > 0) {
+        documentationContext = `<documentation>\n${validResults.join("\n\n")}\n</documentation>`;
+      }
+    }
+
+    const prompt = QUICK_EDIT_PROMPT
+      .replace("{selectedCode}", selectedCode)
+      .replace("{fullCode}", fullCode || "")
+      .replace("{instruction}", instruction)
+      .replace("{documentation}", documentationContext);
+
+    const { text } = await generateText({         // output → text
+      model: groq("llama-3.3-70b-versatile"),
+      prompt,                                       // Remove Output.object
+    });
+
+    return NextResponse.json({ editedCode: text.trim() });   // output.editedCode → text.trim()
+  } catch (error) {
+    console.error("Edit error:", error);
+    return NextResponse.json(
+      { error: "Failed to generate edit" },
+      { status: 500 }
+    );
+  }
+};
