@@ -99,7 +99,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ editedCode: text.trim() });   // output.editedCode → text.trim()
+    
   } catch (error) {
+
     console.error("Edit error:", error);
     return NextResponse.json(
       { error: "Failed to generate edit" },
