@@ -42,6 +42,39 @@ export const ConversationSidebar = ({
     projectId,
 }: ConversationSidebarProps) => {
 
+    const [selectedConversationId, setSelectedConversationId] = useState<Id<"conversations">|null>(null);
+    const createConversation = useCreateConversation();
+    const conversations = useAllConversations(projectId);
+
+
+    const activeConversationId = selectedConversationId ?? conversations?.[0]?._id ?? null;
+
+    const activeConversation = useConversation(activeConversationId);
+    const conversationMessages = useMessages(activeConversationId);
+
+    const isProcessing = conversationMessages?.some(
+        (msg) => msg.status === "processing"
+    )
+
+    const handleCreateConversation = async() => {
+        try {
+            const newConversationId = await createConversation({
+                projectId,
+                title: DEFAULT_CONVERSATION_TITLE
+            });
+
+            setSelectedConversationId(newConversationId);
+            return newConversationId;
+            
+        } catch (error) {
+            toast.error("Unable to create a new conversation");
+            return null;
+        }
+    }
+
+
+
+
 
     return(
 
@@ -49,7 +82,7 @@ export const ConversationSidebar = ({
             <div className="h-8.75 flex items-center justify-between border-b">
 
                 <div className="text-sm truncate pl-3">
-                    {DEFAULT_CONVERSATION_TITLE}
+                    {activeConversation?.title ?? DEFAULT_CONVERSATION_TITLE}
                 </div>
 
                 <div className="flex items-center px-1 gap-1">
@@ -64,6 +97,7 @@ export const ConversationSidebar = ({
                     <Button
                     size={"icon-xs"}
                     variant={"highlight"}
+                    onClick={handleCreateConversation}
                     >
                         <PlusIcon className="size-3.5" />
                     </Button>
@@ -75,11 +109,76 @@ export const ConversationSidebar = ({
             <Conversation className="flex-1">
 
                 <ConversationContent>
-                    <p>Messages</p>
+                    {conversationMessages?.map((message, messageIndex) => (
+                        <Message
+                        key={message._id}
+                        from={message.role}
+                        >
+
+                            <MessageContent>
+
+                                {message.status === "processing" ? (
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        <LoaderIcon className="size-4 animate-spin" />
+                                        <span>Thinking...</span>
+                                    </div>
+                                ) : (
+                                    <MessageResponse>{message.content}</MessageResponse>
+                                )}
+                            </MessageContent>
+
+                            {message.role === "assistant" && message.status === "completed" && messageIndex === (conversationMessages?.length ?? 0) - 1 && (
+                                <MessageActions>
+                                    <MessageAction
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(message.content)
+                                    }}
+
+                                    label="Copy"
+                                    >
+
+                                        <CopyIcon className="size-3" />
+
+                                    </MessageAction>
+                                </MessageActions>
+                            )}
+
+
+                        </Message>
+                    ))}
                 </ConversationContent>
+
+                <ConversationScrollButton />
 
 
             </Conversation>
+
+            <div className="p-3">
+
+                <PromptInput onSubmit={() => {}} className="mt-2 ">
+
+                    <PromptInputBody>
+                        <PromptInputTextarea
+                        placeholder="Ask CodePilot anything..."
+                        onChange={() => {}}
+                        value=""
+                        disabled={false}
+                        />
+                    </PromptInputBody>
+
+                    <PromptInputFooter>
+                        <PromptInputTools />
+
+                        <PromptInputSubmit
+                        disabled={isProcessing ? false: true}
+                        status={isProcessing ? "streaming" : undefined}
+                        />
+
+                    </PromptInputFooter>
+
+                </PromptInput>
+
+            </div>
         </div>
     )
 }
