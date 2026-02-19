@@ -104,6 +104,8 @@ export const ConversationSidebar = ({
         } catch (error) {
             toast.error("Failed to send message")
         }
+        
+        setInput("");
     }
 
 

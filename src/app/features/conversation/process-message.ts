@@ -21,7 +21,23 @@ export const processMessage = inngest.createFunction(
             if: "event.data.messageId == async.data.messageId"
 
         }
-    ]
+    ],
+    onFailure: async({event, step}) => {
+        const {messageId} = event.data.event.data as MessageEvent;
+        const internalKey = process.env.CONVEX_INTERNAL_KEY;
+
+        //Update the message with error content
+
+        if(internalKey){
+            await step.run("update-message-on-failure", async() => {
+                await convex.mutation(api.system.updateMessageContent, {
+                    internalKey,
+                    messageId,
+                    content: "My apologies, I encountered an error while processing your request. Please try again later."
+                });
+            })
+        }
+    },
     },
     {
         event: "message/sent"
