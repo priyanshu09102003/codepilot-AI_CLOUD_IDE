@@ -17,13 +17,24 @@ export async function POST(request: Request){
             status: 401
         })
     }
+    const internalKey = process.env.CONVEX_INTERNAL_KEY;
+
+    if(!internalKey){
+        return NextResponse.json(
+            {error: "Internal key not configured"},
+            {status: 500}
+        )
+    }
 
     const body = await request.json();
     const {conversationId, message} = requestSchema.parse(body);
 
-    //Call convex mutation, query
+    //Call convex mutation, query if internal key available
 
-    const conversation = await convex.query(api)
+    const conversation = await convex.query(api.system.getConversationById, {
+        internalKey,
+        conversationId: conversationId as Id<"conversations">
+    })
 
     //Invoke: Inngest background job
 }

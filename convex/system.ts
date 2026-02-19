@@ -1,14 +1,13 @@
 
-
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 
 const validateInternalKey = (key: string) => {
-  const internalKey = process.env.POLARIS_CONVEX_INTERNAL_KEY;
+  const internalKey = process.env.CONVEX_INTERNAL_KEY;
 
   if (!internalKey) {
-    throw new Error("CodePilot_CONVEX_INTERNAL_KEY is not configured");
+    throw new Error("CONVEX_INTERNAL_KEY is not configured");
   }
 
   if (key !== internalKey) {
