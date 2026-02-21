@@ -57,7 +57,7 @@ export const processMessage = inngest.createFunction(
             throw new NonRetriableError("CONVEX_INTERNAL_KEY is not configured")
         }
 
-        await step.sleep("wait-for-ai-processing", "5s");
+        await step.sleep("wait-for-ai-processing", "30s");
 
         await step.run("update-assistant-message", async() => {
             await convex.mutation(api.system.updateMessageContent,{
