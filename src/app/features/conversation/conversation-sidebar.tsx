@@ -30,6 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useConversation, useAllConversations, useCreateConversation, useMessages } from "@/hooks/use-conversations";
 import { DEFAULT_CONVERSATION_TITLE } from "../../../../convex/constants";
+import { PastConversationsDialog } from "./past-conversations-dialog";
 
 
 
@@ -45,6 +46,10 @@ export const ConversationSidebar = ({
     const [input, setInput] = useState("");
 
     const [selectedConversationId, setSelectedConversationId] = useState<Id<"conversations">|null>(null);
+
+
+    const [pastConversationsOpen, setPastConversationsOpen] = useState(false);
+
     const createConversation = useCreateConversation();
     const conversations = useAllConversations(projectId);
 
@@ -127,6 +132,14 @@ export const ConversationSidebar = ({
 
     return(
 
+    <>
+
+        <PastConversationsDialog 
+            projectId={projectId}
+            open={pastConversationsOpen}
+            onOpenChange={setPastConversationsOpen}
+            onSelect={setSelectedConversationId}
+        />
         <div className="flex flex-col h-full bg-sidebar">
             <div className="h-8.75 flex items-center justify-between border-b">
 
@@ -139,6 +152,7 @@ export const ConversationSidebar = ({
                     <Button
                     size={"icon-xs"}
                     variant={"highlight"}
+                    onClick={() => setPastConversationsOpen(true)}
                     >
                         <HistoryIcon className="size-3.5" />
                     </Button>
@@ -240,5 +254,6 @@ export const ConversationSidebar = ({
 
             </div>
         </div>
+    </>
     )
 }
