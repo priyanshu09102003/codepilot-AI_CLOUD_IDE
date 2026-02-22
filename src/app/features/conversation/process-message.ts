@@ -145,6 +145,18 @@ export const processMessage = inngest.createFunction(
             }
         }
 
+        //Creating the coding agent with file tools
+        const codingAgent = createAgent({
+            name: "codepilot",
+            description: "An expert AI coding assistant",
+            system: systemPrompt,
+            model: gemini({
+                model: "gemini-2.5-flash",
+                apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY
+            }),
+            tools: []
+        })
+
         await step.run("update-assistant-message", async() => {
             await convex.mutation(api.system.updateMessageContent,{
                 internalKey,
