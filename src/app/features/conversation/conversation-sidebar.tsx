@@ -29,7 +29,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useConversation, useAllConversations, useCreateConversation, useMessages } from "@/hooks/use-conversations";
-import { DEFAULT_CONVERSATION_TITLE } from "../../../../convex/constants";
+import { DEFAULT_CONVERSATION_TITLE } from "./constants";
 import { PastConversationsDialog } from "./past-conversations-dialog";
 
 
