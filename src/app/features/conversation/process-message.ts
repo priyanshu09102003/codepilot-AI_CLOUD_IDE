@@ -4,7 +4,9 @@ import { NonRetriableError } from "inngest";
 import { convex } from "@/lib/convex-client";
 import { api } from "../../../../convex/_generated/api";
 import { CODING_AGENT_SYSTEM_PROMPT, DEFAULT_CONVERSATION_TITLE, TITLE_GENERATOR_SYSTEM_PROMPT } from "./constants";
-import { createAgent, gemini } from '@inngest/agent-kit'
+import { createAgent, createNetwork, gemini } from '@inngest/agent-kit'
+import { createReadFilesTool } from "./tools/read-files";
+import { createListFilesTool } from "./tools/list-files";
 
 
 interface MessageEvent{
@@ -154,15 +156,66 @@ export const processMessage = inngest.createFunction(
                 model: "gemini-2.5-flash",
                 apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY
             }),
-            tools: []
+            tools: [
+                createListFilesTool({projectId, internalKey}),
+                createReadFilesTool({internalKey}),
+            ]
+        });
+
+
+        //Create a network for inngest agent
+        const network = createNetwork({
+            name: "codepilot-network",
+            agents: [codingAgent],
+            maxIter: 18,
+            router: ({network}) => {
+                const lastResult = network.state.results.at(-1);
+
+                const hasTextResponse = lastResult?.output.some(
+                    (m) => m.type === "text" && m.role === "assistant"
+                );
+
+                const hasToolCall = lastResult?.output.some(
+                    (m) => m.type === "tool_call"
+                );
+
+                if(hasTextResponse && !hasToolCall){
+                    return undefined
+                }
+
+                return codingAgent
+
+            }
         })
 
+        //Run the agent
+        const result = await network.run(message);
+
+        //Extract the assistant's text response
+        const lastResult = result.state.results.at(-1);
+        const textMessage = lastResult?.output.find(
+            (m) => m.type === "text" && m.role === "assistant"
+        );
+
+        let assistantResponse = "I have processed your request. Let me know if you need anything else!"
+
+        if (textMessage?.type === "text") {
+            assistantResponse =
+                typeof textMessage.content === "string"
+                ? textMessage.content
+                : textMessage.content.map((c) => c.text).join("");
+        }
+
+
+        //Update the assistant message with the response and this also sets the status to complete
         await step.run("update-assistant-message", async() => {
             await convex.mutation(api.system.updateMessageContent,{
                 internalKey,
                 messageId,
-                content: "AI PROCESSED MESSAGE"
+                content: assistantResponse
             })
-        })
+        });
+
+        return {success:true, messageId, conversationId}
     }
 )
