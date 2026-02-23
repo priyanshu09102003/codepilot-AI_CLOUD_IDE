@@ -7,6 +7,12 @@ import { CODING_AGENT_SYSTEM_PROMPT, DEFAULT_CONVERSATION_TITLE, TITLE_GENERATOR
 import { createAgent, createNetwork, gemini } from '@inngest/agent-kit'
 import { createReadFilesTool } from "./tools/read-files";
 import { createListFilesTool } from "./tools/list-files";
+import { createUpdateFileTool } from "./tools/update-files";
+import { createCreateFilesTool } from "./tools/create-files";
+import { createCreateFolderTool } from "./tools/create-folder";
+import { createRenameFileTool } from "./tools/rename-files";
+import { createDeleteFilesTool } from "./tools/delete-files";
+import { createScrapeUrlsTool } from "./tools/scrape-urls";
 
 
 interface MessageEvent{
@@ -159,6 +165,12 @@ export const processMessage = inngest.createFunction(
             tools: [
                 createListFilesTool({projectId, internalKey}),
                 createReadFilesTool({internalKey}),
+                createUpdateFileTool({internalKey}),
+                createCreateFilesTool({projectId, internalKey}),
+                createCreateFolderTool({projectId, internalKey}),
+                createRenameFileTool({internalKey}),
+                createDeleteFilesTool({internalKey}),
+                createScrapeUrlsTool()
             ]
         });
 
