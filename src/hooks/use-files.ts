@@ -30,6 +30,11 @@ export const useFile = (fileId: Id<"files">|null) => {
     //Optimistic Mutation
 }
 
+export const useFiles = (projectId: Id<"projects">|null) => {
+    return useQuery(api.files.getFiles, projectId?{projectId} : "skip")
+    //Optimistic Mutation
+}
+
 export const useFilePath = (fileId: Id<"files">|null) => {
     return useQuery(api.files.getFilePath, fileId?{id: fileId} : "skip")
 }
