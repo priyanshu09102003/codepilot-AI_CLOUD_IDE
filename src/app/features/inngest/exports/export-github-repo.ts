@@ -82,14 +82,14 @@ export const exportToGithub = inngest.createFunction(
     const { data: repo } = await step.run("create-repo", async () => {
       return await octokit.rest.repos.createForAuthenticatedUser({
         name: repoName,
-        description: description || `Exported from Polaris`,
+        description: description || `Exported from CodePilot`,
         private: visibility === "private",
         auto_init: true,
       });
     });
 
     // Wait for GitHub to initialize the repo (auto_init is async on GitHub's side)
-    await step.sleep("wait-for-repo-init", "3s");
+    await step.sleep("wait-for-repo-init", "6s");
 
     // Get the initial commit SHA (we need this as parent for our commit)
     const initialCommitSha = await step.run("get-initial-commit", async () => {
@@ -210,7 +210,7 @@ export const exportToGithub = inngest.createFunction(
       return await octokit.rest.git.createCommit({
         owner: user.login,
         repo: repoName,
-        message: "Initial commit from Polaris",
+        message: "Initial commit from CodePilot",
         tree: tree.sha,
         parents: [initialCommitSha],
       });
