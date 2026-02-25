@@ -48,7 +48,7 @@ export const PreviewView = ({projectId} : {projectId: Id<"projects">}) => {
                         </div>
                     )}
                     {previewUrl && <span className="truncate">{previewUrl}</span>}
-                    {!isLoading && !previewUrl && !error && <span>Preview URL appears here</span>}
+                    {!isLoading && !previewUrl && !error && <span>Ready to Preview</span>}
                 </div>
 
                 <Button
