@@ -8,6 +8,7 @@ import { Allotment } from "allotment";
 import { FileExplorer } from "./FileExplorer";
 import { EditorView } from "./Editor/editor-view";
 import { PreviewView } from "../preview/preview-view";
+import { ExportPopover } from "../github-integrations/export-github-dialog";
 
 const MIN_SIDEBAR_WIDTH=200;
 const MAX_SIDEBAR_WIDTH=800;
@@ -67,14 +68,7 @@ export const ProjectIDView = (
 
                     <div className="flex-1 flex justify-end h-full">
 
-                        <div className="flex items-center gap-1.5 h-full px-3 cursor-pointer text-muted-foreground border-l hover:bg-accent/30">
-
-                            <FaGithub className="size-4.5" />
-
-                            <span className="text-sm">
-                                Export
-                            </span>
-                        </div>
+                       <ExportPopover projectId = {projectId} />
 
 
                     </div>
