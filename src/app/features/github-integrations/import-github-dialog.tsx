@@ -61,6 +61,18 @@ export const ImportGithubDialog = ({
         if (error instanceof HTTPError) {
           const body = await error.response.json<{ error: string }>();
 
+          if(body.error?.includes("Pro plan is required")){
+            toast.error("Upgrade to CodePilot-PRO to unlock this Premium Feature", {
+              action:{
+                label: "Upgrade",
+                onClick: () => openUserProfile()
+              }
+            });
+            onOpenChange(false);
+            return
+          }
+          
+
           if (body.error?.includes("GitHub not connected")) {
             toast.error("GitHub account not connected", {
               action: {

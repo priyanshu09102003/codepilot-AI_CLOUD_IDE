@@ -6,6 +6,7 @@ import { inngest } from "@/inngest/client";
 
 import { api } from "../../../../../convex/_generated/api";
 import { processMessage } from "@/app/features/conversation/process-message";
+import { toast } from "sonner";
 
 const requestSchema = z.object({
     url: z.url(),
@@ -22,10 +23,18 @@ function parseGithubUrl(url: string){
 }
 
 export async function POST(request: Request){
-    const {userId} = await auth();
+    const {userId , has} = await auth();
 
     if(!userId){
         return NextResponse.json({error: "Unauthorized"}, {status: 401})
+    }
+
+    const hasPro = has({plan: "codepilot_pro"});
+
+    if(!hasPro){
+        return NextResponse.json({error: "Pro plan is required"}, {
+            status: 403
+        })
     }
 
     const body = await request.json();
