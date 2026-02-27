@@ -86,6 +86,5 @@ export const useRenameProject = () => {
 }
 
 export const useUpdateProjectSettings = () => {
-    //Optimistic mutation
     return useMutation(api.projects.updateSettings)
 }
