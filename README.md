@@ -643,11 +643,11 @@ Sentry is configured with the Next.js wizard for automatic error capture across 
 
 ---
 
-## 📖 Build Chapters
+## 📖 Project Flow
 
-CodePilot was built chapter by chapter as a complete production playbook. Here's what each chapter covers:
+CodePilot was built in stages as a complete production playbook. Here's what each phase covers:
 
-| Chapter | Topic | Key Concepts |
+| Stage | Topic | Description |
 |---------|-------|-------------|
 | 1 | **Foundation** | Next.js 15, TypeScript, project setup |
 | 2 | **Authentication** | Clerk SDK, sign-in/up flows, middleware |
@@ -669,11 +669,11 @@ CodePilot was built chapter by chapter as a complete production playbook. Here's
 
 ## 📧 Contact
 
-**[Your Name]** — [LinkedIn](#) • [Twitter/X](#)
+**[Priyanshu Paul]** — [LinkedIn](https://www.linkedin.com/in/priyanshu-paul-59221228a/)
 
-Project Link: [https://codepilot.vercel.app](https://codepilot.vercel.app)
+Project Link: [https://codepilot-ai-cloud-ide.vercel.app](https://codepilot-ai-cloud-ide.vercel.app)
 
-GitHub Repository: [https://github.com/YOUR_USERNAME/codepilot](https://github.com/YOUR_USERNAME/codepilot)
+GitHub Repository: [https://github.com/priyanshu09102003/codepilot-AI_CLOUD_IDE](https://github.com/priyanshu09102003/codepilot-AI_CLOUD_IDE)
 
 ---
 
