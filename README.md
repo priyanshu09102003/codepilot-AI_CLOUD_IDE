@@ -590,7 +590,7 @@ Exporting your project back to GitHub runs as an **Inngest background job**, so 
 
 #### Click on Export
 
-Click on Export of any project, configure repository details and click on Export.
+Click on Export of any project, configure repository details and click on Create Repository.
 
 </td>
 </tr>
@@ -602,7 +602,7 @@ Click on Export of any project, configure repository details and click on Export
 
 #### Real-time Export Status
 
-CodePilot handles the internal export functions and github integrations and shows real-time export status.
+CodePilot handles the internal export functions and github integrations and shows real-time export status. It can create repository(both Public or Private) on it's own without blocking the UI, with the help of Inngest background job
 
 </td>
 <td width="50%">
@@ -617,7 +617,7 @@ CodePilot handles the internal export functions and github integrations and show
 <tr>
 <td width="50%">
 
-<img src="./public/screenshots/github-integration.png" alt="Github Integration" width="100%">
+<img src="./public/screenshots/github-view.png" alt="Github Integration" width="100%">
 
 </td>
 <td width="50%">
