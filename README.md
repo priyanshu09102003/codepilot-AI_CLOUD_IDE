@@ -33,6 +33,10 @@
 
 ### Key Features
 
+<div align="center">
+  <img src="./public/screenshots/features.png" alt="CodePilot Features" width="100%">
+</div>
+
 * **AI Agent that edits files**: An Inngest-powered agent autonomously creates and modifies files across your project in response to natural language prompts
 * **Ghost Text Suggestions**: Inline AI completions appear as you type — accept with Tab
 * **Cmd+K Quick Edit**: Select any code block, press Cmd+K, and instruct the AI to transform it
@@ -455,7 +459,7 @@ The code editor is powered by CodeMirror 6 — the best-in-class modular editor 
 </td>
 <td width="50%">
 
-<img src="./public/screenshots/codemirror-editor.png" alt="CodeMirror 6 Editor" width="100%">
+<img src="./public/screenshots/editor-overview.png" alt="CodeMirror 6 Editor" width="100%">
 
 </td>
 </tr>
@@ -488,18 +492,18 @@ As you type, CodePilot sends the current file context to the AI and renders the 
 </tr>
 </table>
 
-### Cmd+K Quick Edit
+### Quick Edit
 
 <table>
 <tr>
 <td width="50%">
 
-Select any block of code, press **Cmd+K**, and a modal appears. Describe the change you want — "add error handling", "convert to TypeScript", "add a gradient using Tailwind" — and the AI rewrites the selection and streams the result back into the editor. The quick edit modal uses the same AI SDK pipeline as the agent, with the selected code passed as context.
+Select any block of code and a modal appears. Describe the change you want — "add error handling", "convert to TypeScript", "add a gradient using Tailwind" — and the AI rewrites the selection and streams the result back into the editor. The quick edit modal uses the same AI SDK pipeline as the agent, with the selected code passed as context.
 
 </td>
 <td width="50%">
 
-<img src="./public/screenshots/cmdk-modal.png" alt="Cmd+K Quick Edit" width="100%">
+<img src="./public/screenshots/quick-edit.png" alt="Cmd+K Quick Edit" width="100%">
 
 </td>
 </tr>
@@ -521,10 +525,6 @@ The most powerful feature of CodePilot is the AI agent powered by **Inngest Agen
 The agent reasons over the entire conversation history, the current file tree, and any scraped documentation before deciding which tools to call. Because it runs on Inngest, it survives page refreshes, handles retries automatically, and streams status updates back to the chat sidebar via Convex in real time.
 
 ### Firecrawl URL Scraping
-
-<div align="center">
-  <img src="./public/screenshots/firecrawl.png" alt="Firecrawl URL Scraping" width="100%">
-</div>
 
 Include any URL in your message — a documentation page, a GitHub README, an API reference — and CodePilot automatically detects it, scrapes it with Firecrawl, converts it to clean Markdown, and injects it into the agent's context window. This means the AI always has access to the latest, most accurate documentation when writing code for any library or API.
 
@@ -577,16 +577,54 @@ Connecting your GitHub account via Clerk OAuth grants CodePilot a repository acc
 
 ### GitHub Export
 
+Exporting your project back to GitHub runs as an **Inngest background job**, so it works reliably even for large projects. The export job creates a new repository (or pushes to an existing one), builds the complete file tree from Convex, handles binary encoding, and uses the GitHub REST API to commit everything. Real-time status tracking via Convex keeps the UI updated as the export progresses.
+
 <table>
 <tr>
 <td width="50%">
 
-Exporting your project back to GitHub runs as an **Inngest background job**, so it works reliably even for large projects. The export job creates a new repository (or pushes to an existing one), builds the complete file tree from Convex, handles binary encoding, and uses the GitHub REST API to commit everything. Real-time status tracking via Convex keeps the UI updated as the export progresses.
+<img src="./public/screenshots/github-integration.png" alt="Github Integration" width="100%">
 
 </td>
 <td width="50%">
 
-<img src="./public/screenshots/github-export.png" alt="GitHub Export" width="100%">
+#### Click on Export
+
+Click on Export of any project, configure repository details and click on Export.
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="50%">
+
+#### Real-time Export Status
+
+CodePilot handles the internal export functions and github integrations and shows real-time export status.
+
+</td>
+<td width="50%">
+
+<img src="./public/screenshots/exporting.png" alt="CodeMirror 6 Editor" width="100%">
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="50%">
+
+<img src="./public/screenshots/github-integration.png" alt="Github Integration" width="100%">
+
+</td>
+<td width="50%">
+
+#### Safely exported to github
+
+Codepilot manages all the background jobs and creates the repository and safely pushes to github. It can create both Public or Private repository and has access to all your public and private repositories due to oauth permission when logged in with Github.
 
 </td>
 </tr>
@@ -634,7 +672,7 @@ CodePilot is a complete SaaS application with subscription management powered by
 ## 📊 Error Tracking & Monitoring
 
 <div align="center">
-  <img src="./public/screenshots/sentry-monitoring.png" alt="Sentry Monitoring" width="100%">
+  <img src="./public/screenshots/sentry-logging.png" alt="Sentry Monitoring" width="100%">
 </div>
 
 Sentry is configured with the Next.js wizard for automatic error capture across the app. Background job failures from Inngest are caught and reported with full context — which user triggered the job, which project was involved, and the complete stack trace.
